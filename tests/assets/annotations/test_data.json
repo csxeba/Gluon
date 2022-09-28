@@ -1,0 +1,30 @@
+{
+  "_image_sizes": [
+    {"w": 640, "h": 320},
+    {"w": 640, "h": 320},
+    {"w": 640, "h": 320},
+    {"w": 640, "h": 320},
+    {"w": 640, "h": 320},
+    {"w": 640, "h": 320}
+  ],
+  "images": [
+    {"id": 0, "file_path": "test_image_000.png"},
+    {"id": 1, "file_path": "test_image_001.png"},
+    {"id": 2, "file_path": "test_image_002.png"},
+    {"id": 3, "file_path": "test_image_003.png"},
+    {"id": 4, "file_path": "test_image_004.png"},
+    {"id": 6, "file_path": "test_image_006.png"}
+  ],
+  "annotations": [
+    {"id": 0, "image_id": 0, "bbox": [30, 15, 20, 20], "category_id":  0},
+    {"id": 1, "image_id": 2, "bbox": [0, 0, -10, -10], "category_id": 0},
+    {"id": 2, "image_id": 2, "bbox": [63, 63, 10, 10], "category_id": 0},
+    {"id": 3, "image_id": 4, "bbox": [420, 120, 150, 150], "category_id": 0},
+    {"id": 4, "image_id": 4, "bbox": [0, 0, 640, 320], "category_id": 2},
+    {"id": 5, "image_id": 4, "bbox": [100, 33, 0, 0], "category_id": 3},
+    {"id": 6, "image_id": 6, "bbox": [320, 160, 10, 10], "category_id": 0},
+    {"id": 7, "image_id": 6, "bbox": [310, 150, 22, 22], "category_id": 0},
+    {"id": 8, "image_id": 6, "bbox": [100, 100, 40, 40], "category_id": 1},
+    {"id": 9, "image_id": 6, "bbox": [80, 80, 60, 60], "category_id": 1}
+  ]
+}

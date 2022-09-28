@@ -1,0 +1,4 @@
+tmp/
+.mypy_cache/
+.idea/
+*.py[co]

@@ -1,0 +1,8 @@
+{
+  "car": 0,
+  "truck": 1,
+  "bus": 1,
+  "person": 2,
+  "bicycle": 3,
+  "motorcycle": 4
+}
