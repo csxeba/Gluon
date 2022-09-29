@@ -43,7 +43,8 @@ class _COCOClassMapper:
 
     def transform(self, coco_category_id: int) -> Optional[int]:
         coco_category_descriptor = self.coco_categories[coco_category_id]
-        if (category_name := coco_category_descriptor["name"]) not in self.class_mapping:
+        category_name = coco_category_descriptor["name"]
+        if category_name not in self.class_mapping:
             return None
         gluon_category_id = self.class_mapping[category_name]
         return gluon_category_id
