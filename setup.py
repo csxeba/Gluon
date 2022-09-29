@@ -16,6 +16,5 @@ setup(
                       "matplotlib",
                       "pytorch>=1.12",
                       "torchvision>=0.13",
-                      "tqdm",
-                      "git+https://github.com/csxeba/Artifactorium.git"],
+                      "tqdm"],
 )
