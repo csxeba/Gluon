@@ -53,12 +53,18 @@ class _COCOClassMapper:
 class MSCOCODetection(torch.utils.data.Dataset[GluonDataPoint]):
 
     default_input_element_key = "image"
+    default_coco_categories_json = "data/mscoco_2017_instances_categories.json"
+    default_class_mapping_json = "data/mscoco_2017_instances_gluon_mapping.json"
+    default_train_images_root = "/data/Datasets/MSCOCO/train2017"
+    default_val_images_root = "/data/Datasets/MSCOCO/val2017"
+    default_annotations_root = "/data/Datasets/MSCOCO/annotations"
 
     def __init__(
             self,
             images_root: str,
             annotation_file: str,
-            class_mapping: Dict[str, int],
+            class_mapping_json: str,
+            coco_categories_json: str,
             filters: Optional[List[Callable[[COCOSample], bool]]] = None,
             transforms: Optional[List[Callable[[GluonDataPoint], GluonDataPoint]]] = None,
             gluon_input_element_key: Optional[str] = None,
@@ -70,16 +76,24 @@ class MSCOCODetection(torch.utils.data.Dataset[GluonDataPoint]):
         self.data = json.load(open(annotation_file))
         self.index: List[COCOSample] = []
         self.class_mapper = _COCOClassMapper(
-            coco_categories=json.load(open("data/mscoco_2017_instances_categories.json")),
-            class_mapping=class_mapping,
+            coco_categories=json.load(open(coco_categories_json)),
+            class_mapping=json.load(open(class_mapping_json)),
         )
-        self.num_classes = len(class_mapping)
+        self.num_classes = len(self.class_mapper.class_mapping)
         self.input_element_key = gluon_input_element_key or self.default_input_element_key
 
         image_id_to_meta = {meta["id"]: meta for meta in self.data["images"]}
         image_id_to_annos: Dict[int, List[COCOAnnotation]] = defaultdict(list)
         for anno in self.data["annotations"]:
-            if len(anno["bbox"]) != 4:
+            image_w = image_id_to_meta[anno["image_id"]]["width"]
+            image_h = image_id_to_meta[anno["image_id"]]["height"]
+            if len(anno["bbox"]) != 4:  # Invalid box
+                continue
+            if anno["bbox"][2] < 2 or anno["bbox"][3] < 2:  # Dimension too small
+                continue
+            if anno["bbox"][0] + anno["bbox"][2] / 2 >= image_w:  # Center out of bounds
+                continue
+            if anno["bbox"][1] + anno["bbox"][3] / 2 >= image_h:  # Center out of bounds
                 continue
             gluon_class_id = self.class_mapper.transform(anno["category_id"])
             if gluon_class_id is None:
@@ -118,8 +132,9 @@ class MSCOCODetection(torch.utils.data.Dataset[GluonDataPoint]):
 
             class_ids.append(anno.gluon_class_id)
             box = np.array(anno.bbox)
-            box_x0y0 = np.clip(box[:2], 0.0, spatial_dims - 1.0) / spatial_dims
-            box_x1y1 = np.clip(box[:2] + box[2:], 0.0, spatial_dims - 1.0) / spatial_dims
+            box_x0y0 = box[:2] / spatial_dims
+            box_x1y1 = (box[:2] + box[2:]) / spatial_dims
+            assert np.all(box_x0y0 < box_x1y1)
             keypoint_repr = np.concatenate([box_x0y0, box_x1y1], axis=0)
 
             box_corners.append(keypoint_repr)
@@ -146,6 +161,7 @@ class MSCOCODetection(torch.utils.data.Dataset[GluonDataPoint]):
             shuffle=shuffle,
             num_workers=num_workers,
             collate_fn=no_collate,
+            prefetch_factor=2,
         )
         return loader
 

@@ -109,7 +109,7 @@ def place_embeddings(
 
     batch_dim, _, width, heigth = shape.as_tuple()
     depth = embeddings.size(1)
-    result = torch.zeros([batch_dim, depth, width, heigth], dtype=torch.float32)
+    result = torch.zeros([batch_dim, depth, heigth, width], dtype=torch.float32)
     for (batch_idx, class_idx, coord_x, coord_y), embedding in zip(
         center_locations, embeddings
     ):
@@ -143,7 +143,6 @@ def snap_coordinates_to_grid(
     if len(coordinates) == 0:
         return coordinates
 
-    assert 0.0 <= np.max(coordinates) < 1.0, f"Max: {np.max(coordinates)}"
     scaler = np.array(grid_resolution).astype(np.float32)
     coordinates_upscaled = coordinates * scaler[None, :]
     coordinates_upscaled_snapped = np.round(coordinates_upscaled)

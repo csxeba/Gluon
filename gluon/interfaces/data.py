@@ -86,7 +86,10 @@ class Location(pydantic.BaseModel):
         shape_scaler = torch.as_tensor(
             tensor_shape.as_tuple()[2:4], dtype=torch.float32
         )
-        center_xy_scaled = torch.round(self.center_xy * shape_scaler[None, :]).int()
+        center_xy_scaled = torch.clamp(
+            torch.round(self.center_xy * shape_scaler[None, :]),
+            torch.zeros(2), shape_scaler - 1,
+        ).int()
         tensor_indices = torch.cat(
             [
                 self.batch_idx[:, None],

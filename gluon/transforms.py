@@ -21,7 +21,6 @@ class ResizeForTraining(Transformation):
         self.key = input_element_key
 
     def forward(self, datapoint: GluonDataPoint) -> GluonDataPoint:
-        assert 0.0 <= np.max(datapoint.labels.box_corners) < 1.0, f"Max: {np.max(datapoint.labels.box_corners)}"
         tensor = datapoint.inputs.elements[self.key]
         depth, h, w = tensor.size()
         if h > w:
@@ -45,7 +44,6 @@ class ResizeForTraining(Transformation):
         )
         assert np.all(box_corners_scaler <= 1)
         datapoint.labels.box_corners *= box_corners_scaler[None, :]
-        assert 0.0 <= np.max(datapoint.labels.box_corners) < 1.0, f"Max: {np.max(datapoint.labels.box_corners)}"
         return datapoint
 
     def reverse(self, data_point: GluonDataPoint) -> GluonDataPoint:

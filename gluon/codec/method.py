@@ -39,7 +39,7 @@ class CTDetCodec(ModelCodec):
     ):
         self.image_shape = image_shape
         self.tensor_shape = label_tensor_shape
-        self.tensor_shape_scaler = label_tensor_shape.width, label_tensor_shape.height
+        self.tensor_shape_scaler = label_tensor_shape.height, label_tensor_shape.width
         self.num_classes = num_classes
         self.image_codec = CollateInputCodec()
         self.heatmap_codec = HeatmapDataCodec()
