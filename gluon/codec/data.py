@@ -111,11 +111,11 @@ class HeatmapDataCodec(DataCodec):
         # center_xy = torch.flip(center_yx, dims=[1])
         result = self.Result(
             Location(
-                center_xy=center_xy,
-                class_ids=class_ids,
-                batch_idx=batch_idx,
+                center_xy=center_xy.cpu(),
+                class_ids=class_ids.cpu(),
+                batch_idx=batch_idx.cpu(),
             ),
-            scores,
+            scores.cpu(),
         )
         return result
 

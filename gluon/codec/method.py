@@ -36,6 +36,7 @@ class CTDetCodec(ModelCodec):
         image_shape: TensorShape,
         label_tensor_shape: TensorShape,
         num_classes: int,
+        device,
     ):
         self.image_shape = image_shape
         self.tensor_shape = label_tensor_shape
@@ -44,9 +45,13 @@ class CTDetCodec(ModelCodec):
         self.image_codec = CollateInputCodec()
         self.heatmap_codec = HeatmapDataCodec()
         self.embedding_codec = EmbeddingDataCodec()
+        self.device = device
 
     def encode_inputs(self, inputs: List[GluonInputs]) -> Dict[str, torch.Tensor]:
-        return self.image_codec.encode(inputs)
+        enc_image = self.image_codec.encode(inputs)
+        for name, tensor in enc_image.items():
+            enc_image[name] = tensor.to(self.device)
+        return enc_image
 
     def decode_inputs(
         self, encoded_inputs: Dict[str, torch.Tensor]
@@ -106,6 +111,8 @@ class CTDetCodec(ModelCodec):
                 tensor_shape=keypoint_tensor_shape,
             ),
         )
+        result["heatmap"] = result["heatmap"].to(self.device)
+        result["keypoint"] = result["keypoint"].to(self.device)
 
         return result
 
